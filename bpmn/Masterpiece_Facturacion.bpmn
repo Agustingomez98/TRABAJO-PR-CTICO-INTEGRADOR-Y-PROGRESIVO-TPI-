@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_Masterpiece" targetNamespace="https://utn.example/masterpiece/tpi4" exporter="Masterpiece TPI4" exporterVersion="1.0">
+  <bpmn:message id="Message_Venta" name="Venta confirmada"/>
+  <bpmn:message id="Message_Solicitud" name="Solicitud de autorizacion de comprobante"/>
+  <bpmn:message id="Message_Resultado" name="Respuesta de autorizacion fiscal"/>
+  <bpmn:collaboration id="Collaboration_Masterpiece">
+    <bpmn:participant id="Participant_Canales" name="Plataformas de venta externas"/>
+    <bpmn:participant id="Participant_ARCA" name="ARCA - Organismo fiscal externo"/>
+    <bpmn:participant id="Participant_Masterpiece" name="Masterpiece" processRef="Process_Masterpiece"/>
+    <bpmn:messageFlow id="MessageFlow_Venta" name="Venta confirmada" sourceRef="Participant_Canales" targetRef="Start_Venta" messageRef="Message_Venta"/>
+    <bpmn:messageFlow id="MessageFlow_Solicitud" name="Solicitud de autorizacion" sourceRef="Task_Enviar" targetRef="Participant_ARCA" messageRef="Message_Solicitud"/>
+    <bpmn:messageFlow id="MessageFlow_Resultado" name="Respuesta: CAE o rechazo" sourceRef="Participant_ARCA" targetRef="Task_Recibir" messageRef="Message_Resultado"/>
+  </bpmn:collaboration>
+  <bpmn:process id="Process_Masterpiece" name="Facturacion electronica integrada - Masterpiece" isExecutable="false">
+    <bpmn:documentation>Proceso propuesto a partir de las Entregas 1, 2 y 3 del TPI. Inicio: venta confirmada de los canales digitales. Salida habitual: factura electronica autorizada por ARCA y stock actualizado. Excepciones: venta no facturable y rechazo/incidencia de ARCA, ambos con gestion administrativa. El comportamiento interno de las plataformas externas y ARCA no esta documentado, por eso se muestran como pools de caja negra.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_Masterpiece">
+      <bpmn:lane id="Lane_Sistema" name="Sistema automatizado - Modulo de facturacion e inventario">
+        <bpmn:flowNodeRef>Start_Venta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Centralizar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Validar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_Aptitud</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Preparar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Enviar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Recibir</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_ARCA</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Guardar</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Stock</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_Exito</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_Admin" name="Administracion y Finanzas">
+        <bpmn:flowNodeRef>Task_RevisarVenta</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_PendienteDatos</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_Incidencia</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>End_PendienteARCA</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Start_Venta" name="Venta confirmada">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:outgoing>Flow_01</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDef_Venta" messageRef="Message_Venta"/>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Task_Centralizar" name="Centralizar venta y datos del cliente">
+      <bpmn:documentation>Registra el canal comercial, cliente, productos, importes, fecha y estado de la venta. Entidades Cliente y Venta.</bpmn:documentation>
+      <bpmn:incoming>Flow_01</bpmn:incoming>
+      <bpmn:outgoing>Flow_02</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Validar" name="Validar datos fiscales y condicion facturable">
+      <bpmn:documentation>Valida datos necesarios para facturacion y bandera Facturable de Venta, sin inventar una politica fiscal detallada.</bpmn:documentation>
+      <bpmn:incoming>Flow_02</bpmn:incoming>
+      <bpmn:outgoing>Flow_03</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_Aptitud" name="Venta apta para facturar?" default="Flow_05_No">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:incoming>Flow_03</bpmn:incoming>
+      <bpmn:outgoing>Flow_04_Si</bpmn:outgoing>
+      <bpmn:outgoing>Flow_05_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_Preparar" name="Preparar solicitud de comprobante fiscal">
+      <bpmn:documentation>Prepara datos para el comprobante fiscal a partir de Cliente y Venta.</bpmn:documentation>
+      <bpmn:incoming>Flow_04_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_06</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sendTask id="Task_Enviar" name="Solicitar autorizacion a ARCA" messageRef="Message_Solicitud">
+      <bpmn:documentation>Interaccion del sistema con ARCA para solicitar autorizacion del comprobante electronico.</bpmn:documentation>
+      <bpmn:incoming>Flow_06</bpmn:incoming>
+      <bpmn:outgoing>Flow_07</bpmn:outgoing>
+    </bpmn:sendTask>
+    <bpmn:receiveTask id="Task_Recibir" name="Recibir resultado de ARCA" messageRef="Message_Resultado">
+      <bpmn:documentation>Obtiene el resultado de ARCA; si se autoriza, se recupera el CAE.</bpmn:documentation>
+      <bpmn:incoming>Flow_07</bpmn:incoming>
+      <bpmn:outgoing>Flow_08</bpmn:outgoing>
+    </bpmn:receiveTask>
+    <bpmn:exclusiveGateway id="Gateway_ARCA" name="Comprobante autorizado?" default="Flow_10_No">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:incoming>Flow_08</bpmn:incoming>
+      <bpmn:outgoing>Flow_09_Si</bpmn:outgoing>
+      <bpmn:outgoing>Flow_10_No</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Task_Guardar" name="Registrar factura, numero, CAE y estado">
+      <bpmn:documentation>Persiste la entidad Factura: NumeroComprobante, CAE, ImporteTotal, FechaEmision, EstadoFactura e IdVenta.</bpmn:documentation>
+      <bpmn:incoming>Flow_09_Si</bpmn:incoming>
+      <bpmn:outgoing>Flow_11</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Task_Stock" name="Actualizar stock disponible">
+      <bpmn:documentation>Actualiza Producto.StockDisponible al facturar, de acuerdo con la propuesta de Entrega 1.</bpmn:documentation>
+      <bpmn:incoming>Flow_11</bpmn:incoming>
+      <bpmn:outgoing>Flow_12</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="End_Exito" name="Factura autorizada y stock actualizado">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:incoming>Flow_12</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_RevisarVenta" name="Revisar datos o elegibilidad de la venta">
+      <bpmn:documentation>Excepcion: revision humana de datos fiscales o falta de requisitos. Reprocesamiento posterior fuera del alcance de este diagrama.</bpmn:documentation>
+      <bpmn:incoming>Flow_05_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_13</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_PendienteDatos" name="Facturacion pendiente por datos o elegibilidad">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:incoming>Flow_13</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Task_Incidencia" name="Gestionar rechazo o incidencia fiscal de ARCA">
+      <bpmn:documentation>Excepcion: rechazo o incidencia de autorizacion fiscal. No se registra CAE ni se descuenta stock.</bpmn:documentation>
+      <bpmn:incoming>Flow_10_No</bpmn:incoming>
+      <bpmn:outgoing>Flow_14</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="End_PendienteARCA" name="Facturacion pendiente por incidencia fiscal">
+      <bpmn:documentation>Etapa del proceso de facturacion automatizada de Masterpiece.</bpmn:documentation>
+      <bpmn:incoming>Flow_14</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_01" name="" sourceRef="Start_Venta" targetRef="Task_Centralizar"/>
+    <bpmn:sequenceFlow id="Flow_02" name="" sourceRef="Task_Centralizar" targetRef="Task_Validar"/>
+    <bpmn:sequenceFlow id="Flow_03" name="" sourceRef="Task_Validar" targetRef="Gateway_Aptitud"/>
+    <bpmn:sequenceFlow id="Flow_04_Si" name="Si" sourceRef="Gateway_Aptitud" targetRef="Task_Preparar"/>
+    <bpmn:sequenceFlow id="Flow_05_No" name="No" sourceRef="Gateway_Aptitud" targetRef="Task_RevisarVenta"/>
+    <bpmn:sequenceFlow id="Flow_06" name="" sourceRef="Task_Preparar" targetRef="Task_Enviar"/>
+    <bpmn:sequenceFlow id="Flow_07" name="" sourceRef="Task_Enviar" targetRef="Task_Recibir"/>
+    <bpmn:sequenceFlow id="Flow_08" name="" sourceRef="Task_Recibir" targetRef="Gateway_ARCA"/>
+    <bpmn:sequenceFlow id="Flow_09_Si" name="Si" sourceRef="Gateway_ARCA" targetRef="Task_Guardar"/>
+    <bpmn:sequenceFlow id="Flow_10_No" name="No" sourceRef="Gateway_ARCA" targetRef="Task_Incidencia"/>
+    <bpmn:sequenceFlow id="Flow_11" name="" sourceRef="Task_Guardar" targetRef="Task_Stock"/>
+    <bpmn:sequenceFlow id="Flow_12" name="" sourceRef="Task_Stock" targetRef="End_Exito"/>
+    <bpmn:sequenceFlow id="Flow_13" name="" sourceRef="Task_RevisarVenta" targetRef="End_PendienteDatos"/>
+    <bpmn:sequenceFlow id="Flow_14" name="" sourceRef="Task_Incidencia" targetRef="End_PendienteARCA"/>
+    <bpmn:dataObject id="DataObject_ClienteVenta" name="Cliente y Venta"/>
+    <bpmn:dataObjectReference id="DataRef_ClienteVenta" dataObjectRef="DataObject_ClienteVenta" name="Cliente y Venta"/>
+    <bpmn:dataObject id="DataObject_Factura" name="Factura: numero, CAE, estado"/>
+    <bpmn:dataObjectReference id="DataRef_Factura" dataObjectRef="DataObject_Factura" name="Factura: numero, CAE, estado"/>
+    <bpmn:dataObject id="DataObject_Producto" name="Producto: StockDisponible"/>
+    <bpmn:dataObjectReference id="DataRef_Producto" dataObjectRef="DataObject_Producto" name="Producto: StockDisponible"/>
+    <bpmn:association id="Assoc_Venta" sourceRef="Task_Centralizar" targetRef="DataRef_ClienteVenta" associationDirection="None"/>
+    <bpmn:association id="Assoc_Factura" sourceRef="Task_Guardar" targetRef="DataRef_Factura" associationDirection="None"/>
+    <bpmn:association id="Assoc_Producto" sourceRef="Task_Stock" targetRef="DataRef_Producto" associationDirection="None"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Masterpiece">
+    <bpmndi:BPMNPlane id="BPMNPlane_Masterpiece" bpmnElement="Collaboration_Masterpiece">
+      <bpmndi:BPMNShape id="Participant_Canales_di" bpmnElement="Participant_Canales" isHorizontal="true">
+        <dc:Bounds x="55" y="137" width="1084" height="175"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_ARCA_di" bpmnElement="Participant_ARCA" isHorizontal="true">
+        <dc:Bounds x="1160" y="137" width="1289" height="175"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_Masterpiece_di" bpmnElement="Participant_Masterpiece" isHorizontal="true">
+        <dc:Bounds x="55" y="374" width="2394" height="524"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Sistema_di" bpmnElement="Lane_Sistema" isHorizontal="true">
+        <dc:Bounds x="93" y="374" width="2356" height="265"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_Admin_di" bpmnElement="Lane_Admin" isHorizontal="true">
+        <dc:Bounds x="93" y="639" width="2356" height="259"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Start_Venta_di" bpmnElement="Start_Venta" isHorizontal="false">
+        <dc:Bounds x="354" y="473" width="42" height="42"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Centralizar_di" bpmnElement="Task_Centralizar" isHorizontal="false">
+        <dc:Bounds x="438" y="449" width="182" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Validar_di" bpmnElement="Task_Validar" isHorizontal="false">
+        <dc:Bounds x="663" y="449" width="187" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Aptitud_di" bpmnElement="Gateway_Aptitud" isHorizontal="false">
+        <dc:Bounds x="898" y="465" width="56" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Preparar_di" bpmnElement="Task_Preparar" isHorizontal="false">
+        <dc:Bounds x="1001" y="449" width="179" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Enviar_di" bpmnElement="Task_Enviar" isHorizontal="false">
+        <dc:Bounds x="1223" y="449" width="178" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Recibir_di" bpmnElement="Task_Recibir" isHorizontal="false">
+        <dc:Bounds x="1444" y="449" width="179" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_ARCA_di" bpmnElement="Gateway_ARCA" isHorizontal="false">
+        <dc:Bounds x="1671" y="465" width="56" height="56"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Guardar_di" bpmnElement="Task_Guardar" isHorizontal="false">
+        <dc:Bounds x="1772" y="449" width="186" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Stock_di" bpmnElement="Task_Stock" isHorizontal="false">
+        <dc:Bounds x="2001" y="449" width="198" height="89"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_Exito_di" bpmnElement="End_Exito" isHorizontal="false">
+        <dc:Bounds x="2252" y="471" width="46" height="46"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RevisarVenta_di" bpmnElement="Task_RevisarVenta" isHorizontal="false">
+        <dc:Bounds x="824" y="695" width="204" height="91"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PendienteDatos_di" bpmnElement="End_PendienteDatos" isHorizontal="false">
+        <dc:Bounds x="1131" y="719" width="42" height="42"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Incidencia_di" bpmnElement="Task_Incidencia" isHorizontal="false">
+        <dc:Bounds x="1585" y="695" width="220" height="91"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="End_PendienteARCA_di" bpmnElement="End_PendienteARCA" isHorizontal="false">
+        <dc:Bounds x="1915" y="719" width="42" height="42"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_ClienteVenta_di" bpmnElement="DataRef_ClienteVenta" isHorizontal="false">
+        <dc:Bounds x="468" y="560" width="45" height="51"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_Factura_di" bpmnElement="DataRef_Factura" isHorizontal="false">
+        <dc:Bounds x="1790" y="560" width="45" height="51"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataRef_Producto_di" bpmnElement="DataRef_Producto" isHorizontal="false">
+        <dc:Bounds x="2020" y="560" width="45" height="51"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01_di" bpmnElement="Flow_01">
+        <di:waypoint x="396" y="494"/>
+        <di:waypoint x="438" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02_di" bpmnElement="Flow_02">
+        <di:waypoint x="620" y="494"/>
+        <di:waypoint x="663" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03_di" bpmnElement="Flow_03">
+        <di:waypoint x="850" y="494"/>
+        <di:waypoint x="898" y="493"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04_Si_di" bpmnElement="Flow_04_Si">
+        <di:waypoint x="954" y="493"/>
+        <di:waypoint x="1001" y="493"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="959" y="456" width="38" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05_No_di" bpmnElement="Flow_05_No">
+        <di:waypoint x="926" y="521"/>
+        <di:waypoint x="926" y="695"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="935" y="573" width="38" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06_di" bpmnElement="Flow_06">
+        <di:waypoint x="1180" y="494"/>
+        <di:waypoint x="1223" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07_di" bpmnElement="Flow_07">
+        <di:waypoint x="1401" y="494"/>
+        <di:waypoint x="1444" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08_di" bpmnElement="Flow_08">
+        <di:waypoint x="1623" y="494"/>
+        <di:waypoint x="1671" y="493"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09_Si_di" bpmnElement="Flow_09_Si">
+        <di:waypoint x="1727" y="493"/>
+        <di:waypoint x="1772" y="494"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1724" y="456" width="38" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10_No_di" bpmnElement="Flow_10_No">
+        <di:waypoint x="1699" y="521"/>
+        <di:waypoint x="1699" y="695"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1705" y="573" width="38" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11_di" bpmnElement="Flow_11">
+        <di:waypoint x="1958" y="494"/>
+        <di:waypoint x="2001" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_12_di" bpmnElement="Flow_12">
+        <di:waypoint x="2199" y="494"/>
+        <di:waypoint x="2252" y="494"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_13_di" bpmnElement="Flow_13">
+        <di:waypoint x="1028" y="741"/>
+        <di:waypoint x="1131" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14_di" bpmnElement="Flow_14">
+        <di:waypoint x="1805" y="741"/>
+        <di:waypoint x="1915" y="740"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Venta_di" bpmnElement="MessageFlow_Venta">
+        <di:waypoint x="375" y="312"/>
+        <di:waypoint x="375" y="473"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Solicitud_di" bpmnElement="MessageFlow_Solicitud">
+        <di:waypoint x="1312" y="449"/>
+        <di:waypoint x="1312" y="312"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_Resultado_di" bpmnElement="MessageFlow_Resultado">
+        <di:waypoint x="1534" y="312"/>
+        <di:waypoint x="1534" y="449"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Venta_di" bpmnElement="Assoc_Venta">
+        <di:waypoint x="527" y="538"/>
+        <di:waypoint x="490" y="560"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Factura_di" bpmnElement="Assoc_Factura">
+        <di:waypoint x="1865" y="538"/>
+        <di:waypoint x="1812" y="560"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Assoc_Producto_di" bpmnElement="Assoc_Producto">
+        <di:waypoint x="2098" y="538"/>
+        <di:waypoint x="2042" y="560"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
