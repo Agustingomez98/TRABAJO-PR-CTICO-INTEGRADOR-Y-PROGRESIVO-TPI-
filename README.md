@@ -150,20 +150,26 @@
 
 # 
 
-# \## Gestión colaborativa
+## Gestión del proyecto
+
+El proyecto utiliza Git y GitHub para gestionar
+la documentación técnica y controlar sus versiones.
+
+Se utilizan ramas secundarias, commits descriptivos
+y Pull Requests para organizar los cambios.
+
+La gestión ágil se realiza mediante GitHub Projects,
+donde se registraron tres historias de usuario:
+
+- HU-01: Centralizar ventas de los canales comerciales.
+- HU-02: Automatizar la emisión de facturas electrónicas.
+- HU-03: Actualizar automáticamente el stock.
+
+Los estados utilizados son Todo, In Progress y Done.
 
 # 
 
-# El proyecto utiliza Git y GitHub para organizar la documentación y registrar los cambios mediante ramas, commits descriptivos y Pull Requests con revisión de pares.
-
-# 
-
-# Las tres historias de usuario se gestionarán mediante GitHub Projects, utilizando los estados Por Hacer, En Progreso y Listo.
-
-# 
-
-# \*\*Tablero de gestión:\*\* Pendiente de incorporar el enlace de GitHub Projects.
-
+**Tablero de gestión:** [Masterpiece - GitHub Projects](https://github.com/users/Agustingomez98/projects/1/views/1?layout_template=board)
 # 
 
 # \## Declaración de uso de inteligencia artificial
