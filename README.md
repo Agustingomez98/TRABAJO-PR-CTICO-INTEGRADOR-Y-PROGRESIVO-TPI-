@@ -1,196 +1,111 @@
-# \# Masterpiece — Trabajo Práctico Integrador y Progresivo
+# Masterpiece | Trabajo Práctico Integrador y Progresivo
 
-# 
+**Universidad Tecnológica Nacional (UTN)**  
+**Carrera:** Tecnicatura Universitaria en Programación a Distancia  
+**Asignatura:** Organización Empresarial  
+**Año:** 2026  
+**Autor de la Entrega 4:** Franco Agustín Gómez
 
-# \*\*Universidad Tecnológica Nacional (UTN)\*\*  
+> Proyecto académico de gestión y documentación de un módulo de facturación electrónica para Masterpiece. El software se encuentra en etapa de propuesta y modelado; no se presenta como una implementación funcional.
 
-# \*\*Carrera:\*\* Tecnicatura Universitaria en Programación a Distancia  
+## Descripción del proyecto
 
-# \*\*Asignatura:\*\* Organización Empresarial  
+**Masterpiece** es una empresa argentina de comercio electrónico dedicada a la importación y venta de artículos de decoración y organización para el hogar. Comercializa sus productos mediante canales digitales como Mercado Libre, Instagram y TikTok.
 
-# \*\*Año:\*\* 2026
+El proyecto propone un **módulo de facturación electrónica integrado** para automatizar la emisión de comprobantes fiscales mediante ARCA, centralizar los datos de ventas y mantener actualizado el inventario.
 
-# 
+## Problema identificado
 
-# \## Integrante
+Actualmente, el proceso de facturación se realiza de forma manual y sin integración automática con el resto de las operaciones. Esto puede generar:
 
-# 
+- Demoras en la emisión de comprobantes.
+- Errores de carga y diferencias entre ventas y facturas.
+- Falta de sincronización con el inventario.
+- Dificultades para controlar y analizar las operaciones comerciales.
 
-# \- Franco Agustín Gómez
+## Solución propuesta
 
-# 
+El módulo propuesto permitirá:
 
-# \## Descripción del proyecto
+1. Centralizar ventas confirmadas provenientes de diferentes canales.
+2. Validar los datos y las condiciones necesarias para facturar.
+3. Solicitar la autorización de comprobantes electrónicos a ARCA.
+4. Registrar las facturas autorizadas, incluidos sus códigos CAE.
+5. Actualizar el inventario según las operaciones facturadas.
+6. Registrar rechazos e incidencias para su revisión administrativa.
 
-# 
+## Objetivos del proyecto
 
-# Masterpiece es una empresa argentina de comercio electrónico dedicada a la importación y comercialización de productos de decoración y organización para el hogar.
+Los siguientes valores son **metas de planificación**, no resultados medidos:
 
-# 
+| Indicador | Meta |
+| --- | --- |
+| Automatización | Facturar automáticamente al menos el **95 %** de las ventas aptas. |
+| Rendimiento | Procesar el **95 %** de las solicitudes en **5 segundos o menos**, en condiciones normales. |
+| Capacidad | Gestionar al menos **10.000 registros** de ventas y facturas. |
+| Plazo | Completar una primera versión funcional en un máximo de **12 semanas**. |
 
-# La empresa utiliza distintos canales digitales, como Mercado Libre, Instagram y TikTok, para comercializar sus productos.
+## Modelado de procesos (BPMN)
 
-# 
+Se modeló el proceso de facturación electrónica desde la recepción de una venta confirmada hasta su autorización fiscal y la actualización del inventario.
 
-# Este proyecto propone desarrollar un \*\*módulo de facturación electrónica integrado\*\* para automatizar la emisión de comprobantes fiscales, centralizar las ventas y mantener actualizada la información del inventario.
+El diagrama contempla:
 
-# 
+- Participantes externos: plataformas comerciales y ARCA.
+- Responsabilidades internas: sistema automatizado y Administración y Finanzas.
+- Decisiones: venta apta para facturación y autorización del comprobante.
+- Excepciones: datos inválidos, rechazos e incidencias que requieren revisión.
 
-# \## Problema identificado
+**Modelo editable:** [Masterpiece_Facturacion.bpmn](bpmn/Masterpiece_Facturacion.bpmn)
 
-# 
+## Historias de usuario y gestión ágil
 
-# Actualmente, la facturación se realiza de manera manual y desconectada de los demás procesos comerciales.
+Las historias de usuario se registran como **GitHub Issues** y se gestionan en un tablero Kanban:
 
-# 
+| Historia | Funcionalidad | Estado inicial |
+| --- | --- | --- |
+| [HU-01](../../issues/1) | Centralizar ventas de los canales comerciales. | Todo |
+| [HU-02](../../issues/2) | Automatizar la emisión de facturas electrónicas. | Todo |
+| [HU-03](../../issues/3) | Actualizar automáticamente el stock. | Todo |
 
-# Esta situación puede ocasionar:
+**[Ver tablero de GitHub Projects](https://github.com/users/Agustingomez98/projects/1/views/1?layout_template=board)**
 
-# 
+Los estados de seguimiento son **Todo**, **In Progress** y **Done**, equivalentes a Por Hacer, En Progreso y Listo. El tablero refleja la planificación académica; las funcionalidades todavía no se consideran implementadas.
 
-# \- Demoras en la emisión de comprobantes.
+## Documentación del TPI
 
-# \- Errores de carga de información.
+| Entrega | Contenido |
+| --- | --- |
+| **1** | La organización y su enfoque sistémico. |
+| **2** | Diagnóstico y planificación del proyecto tecnológico: FODA, objetivos y Gantt. |
+| **3** | Estructura formal y diseño de datos: organigrama y diccionario de datos. |
+| **4** | Modelado BPMN, gestión colaborativa y mecanismos de control. |
 
-# \- Diferencias entre las ventas registradas y las facturas emitidas.
+El PDF consolidado de las cuatro entregas se incorporará en `docs/Masterpiece_TPI_Entrega_Final.pdf` cuando esté finalizado.
 
-# \- Falta de sincronización con el inventario.
+## Control de versiones
 
-# \- Dificultades para controlar y analizar las operaciones.
+La documentación se organiza con **Git y GitHub** mediante ramas de trabajo, commits descriptivos y Pull Requests para registrar y revisar los cambios.
 
-# 
+- Rama principal: `main`.
+- Rama de documentación: `docs/entrega-4`.
+- Gestión de tareas: GitHub Issues y GitHub Projects.
 
-# \## Solución propuesta
+La Entrega 4 se desarrolla individualmente. La consigna académica solicita revisión de pares de al menos un Pull Request; este requisito requiere una revisión externa real o una aclaración de la cátedra para la modalidad individual.
 
-# 
+## Declaración de uso de inteligencia artificial
 
-# Implementar un módulo de facturación electrónica que permita:
+En las distintas entregas se utilizaron asistentes de IA, incluidos **ChatGPT (OpenAI)** y **Claude (Anthropic)**, como apoyo para organizar ideas, revisar la redacción y elaborar propuestas de representación gráfica.
 
-# 
+Las propuestas de IA deben contrastarse con los documentos previos, las reglas de BPMN y los requisitos de la materia. Las correcciones humanas realizadas efectivamente se documentarán antes de la presentación final; no se atribuyen a los asistentes decisiones que corresponden al autor.
 
-# 1\. Centralizar las ventas provenientes de diferentes canales comerciales.
+La responsabilidad por la veracidad, la coherencia conceptual y la presentación del trabajo corresponde al autor.
 
-# 2\. Validar la información necesaria para facturar.
+## Autoría
 
-# 3\. Generar comprobantes electrónicos mediante integración con ARCA.
+- **Entrega 4:** Franco Agustín Gómez (trabajo individual).
+- **Entregas anteriores:** conservan los créditos de autoría indicados en cada documento original.
 
-# 4\. Registrar los comprobantes autorizados y sus códigos CAE.
+---
 
-# 5\. Actualizar automáticamente el inventario.
-
-# 6\. Registrar incidencias para su revisión administrativa.
-
-# 
-
-# \## Objetivos del proyecto
-
-# 
-
-# Las metas establecidas en la planificación son:
-
-# 
-
-# | Indicador | Objetivo |
-
-# |---|---|
-
-# | Automatización | Facturar automáticamente al menos el 95 % de las ventas aptas. |
-
-# | Rendimiento | Procesar el 95 % de las solicitudes en un máximo de 5 segundos bajo condiciones normales. |
-
-# | Capacidad | Gestionar al menos 10.000 registros de ventas y facturas. |
-
-# | Desarrollo | Completar una primera versión funcional en un máximo de 12 semanas. |
-
-# 
-
-# Estas cifras son metas propuestas y no resultados de una implementación existente.
-
-# 
-
-# \## Modelado de procesos — BPMN
-
-# 
-
-# Se diseñó el proceso de facturación electrónica de Masterpiece utilizando BPMN.
-
-# 
-
-# El modelo contempla la interacción entre los canales comerciales, el sistema de facturación, el área de Administración y Finanzas y ARCA.
-
-# 
-
-# Incluye la validación de ventas, autorización fiscal, actualización del inventario y tratamiento de incidencias.
-
-# 
-
-# \*\*Archivo del modelo:\*\* `bpmn/Masterpiece\_Facturacion.bpmn`
-
-# 
-
-# \## Documentación
-
-# 
-
-# La documentación del Trabajo Práctico Integrador comprende:
-
-# 
-
-# \- \*\*Entrega 1:\*\* La organización y su enfoque sistémico.
-
-# \- \*\*Entrega 2:\*\* Diagnóstico y planificación del proyecto tecnológico.
-
-# \- \*\*Entrega 3:\*\* Estructura formal y diseño de datos.
-
-# \- \*\*Entrega 4:\*\* Modelado BPMN, trabajo colaborativo y mecanismos de control.
-
-# 
-
-# El documento consolidado se encontrará en `docs/Masterpiece\_TPI\_Entrega\_Final.pdf`.
-
-# 
-
-## Gestión del proyecto
-
-El proyecto utiliza Git y GitHub para gestionar
-la documentación técnica y controlar sus versiones.
-
-Se utilizan ramas secundarias, commits descriptivos
-y Pull Requests para organizar los cambios.
-
-La gestión ágil se realiza mediante GitHub Projects,
-donde se registraron tres historias de usuario:
-
-- HU-01: Centralizar ventas de los canales comerciales.
-- HU-02: Automatizar la emisión de facturas electrónicas.
-- HU-03: Actualizar automáticamente el stock.
-
-Los estados utilizados son Todo, In Progress y Done.
-
-# 
-
-**Tablero de gestión:** [Masterpiece - GitHub Projects](https://github.com/users/Agustingomez98/projects/1/views/1?layout_template=board)
-# 
-
-# \## Declaración de uso de inteligencia artificial
-
-# 
-
-# Durante la elaboración académica se utilizaron asistentes de inteligencia artificial, entre ellos ChatGPT (OpenAI) y Claude (Anthropic), como herramientas de apoyo para organizar información, revisar la redacción y elaborar representaciones gráficas.
-
-# 
-
-# Los resultados generados por IA deben ser revisados por los integrantes para comprobar su coherencia con el caso Masterpiece, la notación BPMN y los requisitos de la cátedra.
-
-# 
-
-# La responsabilidad por el contenido final, su interpretación y su presentación corresponde al autor.
-
-# 
-
-# \---
-
-# 
-
-# \*\*Proyecto académico — UTN, 2026.\*\*
-
+**Proyecto académico — UTN, 2026.**
